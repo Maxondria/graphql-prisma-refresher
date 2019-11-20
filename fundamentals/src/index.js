@@ -11,6 +11,7 @@ const typeDefs = `
       user(id: ID!): User!
       posts(query: String): [Post!]! 
       users(query: String): [User!]!
+      comments: [Comment!]!
   }
 
   type User {
@@ -18,6 +19,8 @@ const typeDefs = `
       name: String!
       email: String!
       age: Int
+      posts: [Post!]!
+      comments: [Comment!]!
   }
 
   type Post {
@@ -26,6 +29,14 @@ const typeDefs = `
       body: String!
       author: User!
       published: Boolean!
+      comments: [Comment!]!
+  }
+
+  type Comment {
+      id: ID!
+      text: String!
+      post: Post!
+      author: User! 
   }
  `;
 
@@ -76,6 +87,33 @@ const posts = [
   }
 ];
 
+const comments = [
+  {
+    id: 1,
+    text: "Yo Nigga, that's dope",
+    post: 45,
+    author: 4
+  },
+  {
+    id: 2,
+    text: "Hahahaha",
+    post: 46,
+    author: 5
+  },
+  {
+    id: 3,
+    text: "Am telling you...",
+    post: 47,
+    author: 6
+  },
+  {
+    id: 4,
+    text: "JS is king!, Damn...",
+    post: 45,
+    author: 5
+  }
+];
+
 const resolvers = {
   Query: {
     me() {
@@ -106,11 +144,33 @@ const resolvers = {
         );
       }
       return users;
+    },
+    comments(_parent, args, _ctx, _info) {
+      return comments;
+    }
+  },
+  Comment: {
+    post(comment, _args, _ctx, _info) {
+      return posts.find(post => post.id == comment.post);
+    },
+    author(comment, _args, _ctx, _info) {
+      return users.find(user => user.id == comment.author);
     }
   },
   Post: {
     author(post, _args, _ctx, _info) {
       return users.find(user => user.id == post.author);
+    },
+    comments(post, _args, _ctx, _info) {
+      return comments.filter(comment => comment.post == post.id);
+    }
+  },
+  User: {
+    posts(user, _args, _ctx, _info) {
+      return posts.filter(post => post.author == user.id);
+    },
+    comments(user, _args, _ctx, _info) {
+      return comments.filter(comment => comment.author == user.id);
     }
   }
 };
