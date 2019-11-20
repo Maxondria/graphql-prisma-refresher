@@ -16,7 +16,7 @@ const typeDefs = `
 const resolvers = {
   Query: {
     hello() {
-      return "Hello, GraphQL yoga!";
+      return "Hello, GraphQL yoga!!!";
     }
   }
 };
