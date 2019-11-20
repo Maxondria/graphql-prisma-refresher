@@ -11,7 +11,6 @@ const typeDefs = `
       user(id: ID!): User!
       posts(query: String): [Post!]! 
       users(query: String): [User!]!
-      add(numbers: [Float!]!): Float!
   }
 
   type User {
@@ -88,29 +87,17 @@ const resolvers = {
       };
     },
     post(_parent, args, _ctx, _info) {
-      return posts
-        .map(post => {
-          const auth_id = post.author;
-          const author = users.find(user => user.id == auth_id);
-          return { ...post, author };
-        })
-        .find(post => post.id === Number(args.id));
+      return posts.find(post => post.id === Number(args.id));
     },
     user(_parent, args, _ctx, _info) {
       return users.find(user => user.id === Number(args.id));
     },
     posts(_parent, args, _ctx, _info) {
-      const withAuthor = posts.map(post => {
-        const auth_id = post.author;
-        const author = users.find(user => user.id == auth_id);
-        return { ...post, author };
-      });
-
       if (args.query) {
-        return withAuthor.filter(post =>
+        return posts.filter(post =>
           post.title.toLowerCase().includes(args.query.toLowerCase())
         );
-      } else return withAuthor;
+      } else return posts;
     },
     users(_parent, args, _ctx, _info) {
       if (args.query) {
@@ -119,6 +106,11 @@ const resolvers = {
         );
       }
       return users;
+    }
+  },
+  Post: {
+    author(post, _args, _ctx, _info) {
+      return users.find(user => user.id == post.author);
     }
   }
 };
