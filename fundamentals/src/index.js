@@ -6,7 +6,22 @@ import { GraphQLServer } from "graphql-yoga";
 
 const typeDefs = `
   type Query {
-      hello: String!
+      me: User!,
+      posts: [Post!]! 
+  }
+
+  type User {
+      id: ID!
+      name: String!
+      email: String!
+      age: Int
+  }
+
+  type Post {
+      id: ID!
+      title: String!
+      body: String!
+      published: Boolean!
   }
  `;
 
@@ -15,8 +30,23 @@ const typeDefs = `
  */
 const resolvers = {
   Query: {
-    hello() {
-      return "Hello, GraphQL yoga!!!";
+    me() {
+      return {
+        id: 4,
+        name: "Tayebwa Maxon",
+        email: "maxtayebw@gmail.com",
+        age: 45
+      };
+    },
+    posts() {
+      return [
+        {
+          id: 45,
+          title: "VS Code Is Actually Powerful",
+          body: "Yo, sure Ms is making wonders and miracles",
+          published: false
+        }
+      ];
     }
   }
 };
