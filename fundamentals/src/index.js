@@ -6,8 +6,9 @@ import { GraphQLServer } from "graphql-yoga";
 
 const typeDefs = `
   type Query {
-      me: User!,
+      me: User!
       posts: [Post!]! 
+      add(numbers: [Float!]!): Float!
   }
 
   type User {
@@ -47,6 +48,9 @@ const resolvers = {
           published: false
         }
       ];
+    },
+    add(parent, args, ctx) {
+      return args.numbers.reduce((prev, curr) => prev + curr, 0);
     }
   }
 };
