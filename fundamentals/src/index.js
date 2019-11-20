@@ -25,6 +25,7 @@ const typeDefs = `
       id: ID!
       title: String!
       body: String!
+      author: User!
       published: Boolean!
   }
  `;
@@ -57,19 +58,22 @@ const posts = [
     id: 45,
     title: "VS Code Is Actually Powerful",
     body: "Yo, sure Ms is making wonders and miracles",
-    published: false
+    published: false,
+    author: 4
   },
   {
     id: 46,
     title: "Javascript is King",
     body: "The Internals of JS are amazing",
-    published: false
+    published: false,
+    author: 5
   },
   {
     id: 47,
     title: "Secret to GraphQL",
     body: "Your Schema feels fine? It probably is!",
-    published: true
+    published: true,
+    author: 6
   }
 ];
 
@@ -84,18 +88,29 @@ const resolvers = {
       };
     },
     post(_parent, args, _ctx, _info) {
-      return posts.find(post => post.id === Number(args.id));
+      return posts
+        .map(post => {
+          const auth_id = post.author;
+          const author = users.find(user => user.id == auth_id);
+          return { ...post, author };
+        })
+        .find(post => post.id === Number(args.id));
     },
     user(_parent, args, _ctx, _info) {
       return users.find(user => user.id === Number(args.id));
     },
     posts(_parent, args, _ctx, _info) {
+      const withAuthor = posts.map(post => {
+        const auth_id = post.author;
+        const author = users.find(user => user.id == auth_id);
+        return { ...post, author };
+      });
+
       if (args.query) {
-        return posts.filter(post =>
+        return withAuthor.filter(post =>
           post.title.toLowerCase().includes(args.query.toLowerCase())
         );
-      }
-      return posts;
+      } else return withAuthor;
     },
     users(_parent, args, _ctx, _info) {
       if (args.query) {
