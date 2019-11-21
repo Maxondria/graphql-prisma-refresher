@@ -19,6 +19,9 @@ const typeDefs = `
     createUser(data: createUserInput): User!
     createPost(data: createPostInput): Post!
     createComment(data: createCommentInput): Comment!
+    deleteUser(id: ID!): User!
+    deletePost(id: ID!): Post!
+    deleteComment(id: ID!): Comment!
   }
 
   input createUserInput {
@@ -69,7 +72,7 @@ const typeDefs = `
 /**
  * Resolvers
  */
-const users = [
+let users = [
   {
     id: 4,
     name: "Tayebwa Maxon",
@@ -89,7 +92,7 @@ const users = [
   }
 ];
 
-const posts = [
+let posts = [
   {
     id: 45,
     title: "VS Code Is Actually Powerful",
@@ -113,7 +116,7 @@ const posts = [
   }
 ];
 
-const comments = [
+let comments = [
   {
     id: 1,
     text: "Yo Nigga, that's dope",
@@ -208,6 +211,26 @@ const resolvers = {
       users.push(user);
       return user;
     },
+    deleteUser(_parent, args, _ctx, _info) {
+      const userIndex = users.findIndex(user => user.id == args.id);
+
+      if (userIndex === -1) throw new Error("User does not exist!");
+      const [deletedUser] = users.splice(userIndex, 1);
+      //cascade posts and users
+      posts = posts.filter(post => {
+        const match = post.author == args.id;
+        if (match) {
+          comments = comments = comments.filter(
+            comment => comment.post != post.id
+          );
+        }
+        return !match;
+      });
+
+      comments = comments.filter(comment => comment.author != args.id);
+
+      return deletedUser;
+    },
     createPost(_parent, args, _ctx, _info) {
       const authorExists = users.some(user => user.id == args.data.author);
 
@@ -215,6 +238,14 @@ const resolvers = {
       const post = { id: uuidv4(), ...args.data };
       posts.push(post);
       return post;
+    },
+    deletePost(_parent, args, _ctx, _info) {
+      const postIndex = posts.findIndex(post => post.id == args.id);
+      if (postIndex === -1) throw new Error("Post does not exist!");
+      const [deletedPost] = posts.splice(postIndex, 1);
+      //cascade posts and users
+      comments = comments.filter(comment => comment.post != args.id);
+      return deletedPost;
     },
     createComment(_parent, args, _ctx, _info) {
       const authorExists = users.some(user => user.id == args.data.author);
@@ -226,6 +257,12 @@ const resolvers = {
       const comment = { id: uuidv4(), ...args.data };
       comments.push(comment);
       return comment;
+    },
+    deleteComment(_parent, args, _ctx, _info) {
+      const commentIndex = comments.findIndex(comment => comment.id == args.id);
+      if (commentIndex === -1) throw new Error("Comment does not exist!");
+      const [deletedComment] = comments.splice(commentIndex, 1);
+      return deletedComment;
     }
   }
 };
