@@ -16,7 +16,28 @@ const typeDefs = `
   }
 
   type Mutation {
-    createUser(name: String!, email: String!, age: Int): User!
+    createUser(data: createUserInput): User!
+    createPost(data: createPostInput): Post!
+    createComment(data: createCommentInput): Comment!
+  }
+
+  input createUserInput {
+    name: String!
+    email: String!
+    age: Int
+  }
+
+  input createPostInput {
+    title: String!
+    body: String!
+    published: Boolean!
+    author: ID!
+  }
+
+  input createCommentInput {
+    text: String!
+    post: ID!
+    author: ID!
   }
 
   type User {
@@ -180,12 +201,31 @@ const resolvers = {
   },
   Mutation: {
     createUser(_parent, args, _ctx, _info) {
-      const emailTaken = users.some(user => user.email === args.email);
+      const emailTaken = users.some(user => user.email === args.data.email);
 
       if (emailTaken) throw new Error("Email Already In Use");
-      const user = { id: uuidv4(), ...args };
+      const user = { id: uuidv4(), ...args.data };
       users.push(user);
       return user;
+    },
+    createPost(_parent, args, _ctx, _info) {
+      const authorExists = users.some(user => user.id == args.data.author);
+
+      if (!authorExists) throw new Error("Author does not exist!");
+      const post = { id: uuidv4(), ...args.data };
+      posts.push(post);
+      return post;
+    },
+    createComment(_parent, args, _ctx, _info) {
+      const authorExists = users.some(user => user.id == args.data.author);
+      const postExists = posts.some(post => post.id == args.data.post);
+
+      if (!authorExists || !postExists)
+        throw new Error("Author Or Post does not exist!");
+
+      const comment = { id: uuidv4(), ...args.data };
+      comments.push(comment);
+      return comment;
     }
   }
 };
