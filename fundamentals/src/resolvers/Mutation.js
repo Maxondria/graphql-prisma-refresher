@@ -29,6 +29,20 @@ export default {
     return deletedUser;
   },
 
+  updateUser(_parent, { id, data }, { db }, _info) {
+    const user = db.users.find(user => user.id == id);
+
+    if (!user) throw new Error("User does not exist!");
+    let updatedUser;
+    db.users = db.users.map(user => {
+      if (user.id == id) {
+        updatedUser = { ...user, ...data };
+        return updatedUser;
+      } else return user;
+    });
+    return updatedUser;
+  },
+
   createPost(_parent, args, { db }, _info) {
     const authorExists = db.users.some(user => user.id == args.data.author);
 
@@ -36,6 +50,20 @@ export default {
     const post = { id: uuidv4(), ...args.data };
     db.posts.push(post);
     return post;
+  },
+
+  updatePost(_parent, { id, data }, { db }, _info) {
+    const post = db.posts.find(post => post.id == id);
+
+    if (!post) throw new Error("Post does not exist!");
+    let updatedPost;
+    db.posts = db.posts.map(post => {
+      if (post.id == id) {
+        updatedPost = { ...post, ...data };
+        return updatedPost;
+      } else return post;
+    });
+    return updatedPost;
   },
 
   deletePost(_parent, args, { db }, _info) {
@@ -57,6 +85,20 @@ export default {
     const comment = { id: uuidv4(), ...args.data };
     db.comments.push(comment);
     return comment;
+  },
+
+  updateComment(_parent, { id, data }, { db }, _info) {
+    const comment = db.comments.find(comment => comment.id == id);
+
+    if (!comment) throw new Error("Comment does not exist!");
+    let updatedComment;
+    db.comments = db.comments.map(comment => {
+      if (comment.id == id) {
+        updatedComment = { ...comment, ...data };
+        return updatedComment;
+      } else return comment;
+    });
+    return updatedComment;
   },
 
   deleteComment(_parent, args, { db }, _info) {
