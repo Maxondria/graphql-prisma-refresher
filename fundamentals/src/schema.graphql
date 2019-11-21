@@ -29,13 +29,10 @@ input updatePostInput {
   title: String
   body: String
   published: Boolean
-  author: ID
 }
 
 input updateCommentInput {
   text: String
-  post: ID
-  author: ID
 }
 
 input createUserInput {
