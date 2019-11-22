@@ -43,16 +43,22 @@ export default {
     return updatedUser;
   },
 
-  createPost(_parent, args, { db }, _info) {
+  createPost(_parent, args, { db, pubsub }, _info) {
     const authorExists = db.users.some(user => user.id == args.data.author);
 
     if (!authorExists) throw new Error("Author does not exist!");
     const post = { id: uuidv4(), ...args.data };
     db.posts.push(post);
+
+    if (post.published) {
+      pubsub.publish("post", {
+        post: { mutation: "CREATED", data: { ...post } }
+      });
+    }
     return post;
   },
 
-  updatePost(_parent, { id, data }, { db }, _info) {
+  updatePost(_parent, { id, data }, { db, pubsub }, _info) {
     const post = db.posts.find(post => post.id == id);
 
     if (!post) throw new Error("Post does not exist!");
@@ -60,18 +66,38 @@ export default {
     db.posts = db.posts.map(post => {
       if (post.id == id) {
         updatedPost = { ...post, ...data };
+
+        if (!post.published && data.published) {
+          pubsub.publish("post", {
+            post: { mutation: "CREATED", data: { ...updatedPost } }
+          });
+        } else if (post.published && !data.published) {
+          pubsub.publish("post", {
+            post: { mutation: "DELETED", data: { ...post } }
+          });
+        } else if (post.published && data.published) {
+          pubsub.publish("post", {
+            post: { mutation: "UPDATED", data: { ...updatedPost } }
+          });
+        }
+
         return updatedPost;
       } else return post;
     });
     return updatedPost;
   },
 
-  deletePost(_parent, args, { db }, _info) {
+  deletePost(_parent, args, { db, pubsub }, _info) {
     const postIndex = db.posts.findIndex(post => post.id == args.id);
     if (postIndex === -1) throw new Error("Post does not exist!");
     const [deletedPost] = db.posts.splice(postIndex, 1);
     //cascade posts and users
-    comments = db.comments.filter(comment => comment.post != args.id);
+    db.comments = db.comments.filter(comment => comment.post != args.id);
+    if (deletedPost.published) {
+      pubsub.publish("post", {
+        post: { mutation: "DELETED", data: { ...deletedPost } }
+      });
+    }
     return deletedPost;
   },
 
@@ -84,7 +110,9 @@ export default {
 
     const comment = { id: uuidv4(), ...args.data };
     db.comments.push(comment);
-    pubsub.publish(`comment ${args.data.post}`, { comment });
+
+    pubsub.publish(`comment_${args.data.post}`, { comment });
+
     return comment;
   },
 
