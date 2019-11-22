@@ -75,7 +75,7 @@ export default {
     return deletedPost;
   },
 
-  createComment(_parent, args, { db }, _info) {
+  createComment(_parent, args, { db, pubsub }, _info) {
     const authorExists = db.users.some(user => user.id == args.data.author);
     const postExists = db.posts.some(post => post.id == args.data.post);
 
@@ -84,6 +84,7 @@ export default {
 
     const comment = { id: uuidv4(), ...args.data };
     db.comments.push(comment);
+    pubsub.publish(`comment ${args.data.post}`, { comment });
     return comment;
   },
 

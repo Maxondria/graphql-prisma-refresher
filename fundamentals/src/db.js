@@ -23,7 +23,7 @@ const posts = [
     id: 45,
     title: "VS Code Is Actually Powerful",
     body: "Yo, sure Ms is making wonders and miracles",
-    published: false,
+    published: true,
     author: 4
   },
   {
