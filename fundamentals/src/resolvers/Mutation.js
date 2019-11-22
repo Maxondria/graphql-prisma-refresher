@@ -111,12 +111,14 @@ export default {
     const comment = { id: uuidv4(), ...args.data };
     db.comments.push(comment);
 
-    pubsub.publish(`comment_${args.data.post}`, { comment });
+    pubsub.publish(`comment_${args.data.post}`, {
+      comment: { mutation: "ADDED", data: { ...comment } }
+    });
 
     return comment;
   },
 
-  updateComment(_parent, { id, data }, { db }, _info) {
+  updateComment(_parent, { id, data }, { db, pubsub }, _info) {
     const comment = db.comments.find(comment => comment.id == id);
 
     if (!comment) throw new Error("Comment does not exist!");
@@ -124,18 +126,28 @@ export default {
     db.comments = db.comments.map(comment => {
       if (comment.id == id) {
         updatedComment = { ...comment, ...data };
+
+        pubsub.publish(`comment_${comment.post}`, {
+          comment: { mutation: "UPDATED", data: { ...comment } }
+        });
+
         return updatedComment;
       } else return comment;
     });
     return updatedComment;
   },
 
-  deleteComment(_parent, args, { db }, _info) {
+  deleteComment(_parent, args, { db, pubsub }, _info) {
     const commentIndex = db.comments.findIndex(
       comment => comment.id == args.id
     );
     if (commentIndex === -1) throw new Error("Comment does not exist!");
     const [deletedComment] = db.comments.splice(commentIndex, 1);
+
+    pubsub.publish(`comment_${deletedComment.post}`, {
+      comment: { mutation: "DELETED", data: { ...deletedComment } }
+    });
+
     return deletedComment;
   }
 };
