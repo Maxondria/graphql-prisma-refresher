@@ -5,11 +5,13 @@
   "license": "MIT",
   "scripts": {
     "start": "node_modules/.bin/nodemon src/index.js --ext js,graphql --exec babel-node",
-    "get-schema": "node_modules/.bin/graphql get-schema -p prisma"
+    "get-schema": "node_modules/.bin/graphql get-schema -p prisma",
+    "deploy": "node_modules/.bin/prisma deploy"
   },
   "dependencies": {
     "graphql-cli": "^3.0.14",
     "graphql-yoga": "^1.18.3",
+    "prisma": "^1.34.10",
     "prisma-binding": "^2.3.16",
     "uuid": "^3.3.3"
   },
