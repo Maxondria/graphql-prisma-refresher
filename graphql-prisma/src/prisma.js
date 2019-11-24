@@ -6,10 +6,10 @@ const prisma = new Prisma({
 });
 
 export { prisma as default };
-// prisma.query
-//   .users(null, "{ id name email posts { id } }")
-//   .then(users => console.log(JSON.stringify(users, undefined, 2)))
-//   .catch(e => console.log(e));
+prisma.query
+  .users(null, "{ id comments { id } }")
+  .then(users => console.log(JSON.stringify(users, undefined, 2)))
+  .catch(e => console.log(e));
 
 // prisma.mutation
 //   .createPost(

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node_modules/.bin/nodemon src/index.js --ext js,graphql --exec babel-node",
     "get-schema": "node_modules/.bin/graphql get-schema -p prisma",
-    "deploy": "node_modules/.bin/prisma deploy"
+    "deploy": "node_modules/.bin/prisma deploy",
+    "postdeploy": "yarn run get-schema"
   },
   "dependencies": {
     "graphql-cli": "^3.0.14",
