@@ -17,9 +17,9 @@ const resolvers = {
   Query,
   Mutation,
   Subscription,
-  Comment,
+  User,
   Post,
-  User
+  Comment
 };
 
 const server = new GraphQLServer({

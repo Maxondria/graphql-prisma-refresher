@@ -1,5 +1,5 @@
 export default {
-  async post(_parent, args, { db, prisma }, _info) {
+  async post(_parent, args, { prisma }, _info) {
     const postExists = await prisma.exists.Post({ id: args.id });
     if (!postExists) throw new Error("Post does not exist");
 
@@ -8,7 +8,7 @@ export default {
     });
   },
 
-  async user(_parent, args, { db, prisma }, _info) {
+  async user(_parent, args, { prisma }, _info) {
     const userExists = await prisma.exists.User({ id: args.id });
     if (!userExists) throw new Error("User does not exist");
 
@@ -39,7 +39,7 @@ export default {
     return await prisma.query.users(opArgs, info);
   },
 
-  comments(_parent, _args, { db }, _info) {
-    return db.comments;
+  async comments(_parent, _args, { prisma }, info) {
+    return await prisma.query.comments(null, info);
   }
 };
