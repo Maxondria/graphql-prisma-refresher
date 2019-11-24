@@ -13,7 +13,7 @@ Create a new prisma project:
 Follow thru the necessary prompts from the terminal.
 
 Then resume to run the following,
-If using prisma versions ``1.*.*``, rename `datamodel.prisma` file to `.graphql` extension.
+If using prisma versions ``1.*.*``, you could choose rename `datamodel.prisma` file to `.graphql` extension if you wish.
 
 Also, update `prisma.yml` to reflect the changes.
 
