@@ -1,10 +1,20 @@
 export default {
-  post(_parent, args, { db }, _info) {
-    return db.posts.find(post => post.id === Number(args.id));
+  async post(_parent, args, { db, prisma }, _info) {
+    const postExists = await prisma.exists.Post({ id: args.id });
+    if (!postExists) throw new Error("Post does not exist");
+
+    return await prisma.query.post({
+      where: { id: args.id }
+    });
   },
 
-  user(_parent, args, { db }, _info) {
-    return db.users.find(user => user.id === Number(args.id));
+  async user(_parent, args, { db, prisma }, _info) {
+    const userExists = await prisma.exists.User({ id: args.id });
+    if (!userExists) throw new Error("User does not exist");
+
+    return await prisma.query.user({
+      where: { id: args.id }
+    });
   },
 
   async posts(_parent, args, { prisma }, info) {
