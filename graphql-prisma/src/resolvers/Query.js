@@ -8,12 +8,14 @@ export default {
   },
 
   async posts(_parent, args, { prisma }, info) {
-    // if (args.query) {
-    //   return db.posts.filter(post =>
-    //     post.title.toLowerCase().includes(args.query.toLowerCase())
-    //   );
-    // } else return db.posts;
-    return await prisma.query.posts(null, info);
+    const opArgs = {};
+
+    if (args.query) {
+      opArgs.where = {
+        OR: [{ title_contains: args.query }, { body_contains: args.query }]
+      };
+    }
+    return await prisma.query.posts(opArgs, info);
   },
 
   async users(_parent, args, { prisma }, info) {
@@ -21,7 +23,7 @@ export default {
 
     if (args.query) {
       opArgs.where = {
-        name_contains: args.query
+        OR: [{ name_contains: args.query }, { email_contains: args.query }]
       };
     }
     return await prisma.query.users(opArgs, info);
