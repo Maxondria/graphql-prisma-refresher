@@ -9,6 +9,8 @@ import User from "./resolvers/User";
 import Mutation from "./resolvers/Mutation";
 import Subscription from "./resolvers/Subscription";
 
+import "./prisma";
+
 const pubsub = new PubSub();
 
 const resolvers = {
@@ -17,7 +19,7 @@ const resolvers = {
   Subscription,
   Comment,
   Post,
-  User,
+  User
 };
 
 const server = new GraphQLServer({
