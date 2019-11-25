@@ -10,7 +10,10 @@ export default {
 
   post: {
     subscribe(_parent, _args, { prisma }, info) {
-      return prisma.subscription.post(null, info);
+      return prisma.subscription.post(
+        { where: { node: { published: true } } },
+        info
+      );
     }
   }
 };
