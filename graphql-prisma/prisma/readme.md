@@ -19,7 +19,7 @@ Also, update `prisma.yml` to reflect the changes in case you changed the extensi
 
 Add a secret in `prisma.yml` to a string of choice
 
-Then run `docker-compose -d` to pull the prisma docker image in current prisma project directory
+Then run `docker-compose up -d` to pull the prisma docker image in current prisma project directory
 
 Define your schema in `datamodel.prisma`
 

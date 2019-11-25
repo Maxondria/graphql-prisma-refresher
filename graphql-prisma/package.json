@@ -8,7 +8,12 @@
     "get-schema": "node_modules/.bin/graphql get-schema -p prisma",
     "deploy": "node_modules/.bin/prisma deploy",
     "postdeploy": "yarn run get-schema",
-    "prisma-token": "node_modules/.bin/prisma token"
+    "prisma-token": "node_modules/.bin/prisma token",
+    "prisma-reset": "node_modules/.bin/prisma reset --force",
+    "prisma-del-service": "node_modules/.bin/prisma delete --force",
+    "predocker":"cd prisma && yarn run prisma-del-service && yarn run prisma-reset",
+    "docker": "docker-compose stop && docker system prune -a && docker-compose up -d",
+    "postdocker": "yarn run deploy"
   },
   "dependencies": {
     "graphql-cli": "^3.0.14",
