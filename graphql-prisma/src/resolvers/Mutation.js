@@ -22,6 +22,19 @@ export default {
     };
   },
 
+  async loginUser(_parent, { data: { email, password } }, { prisma }, _info) {
+    const user = await prisma.query.user({ where: { email } });
+    if (!user) throw new Error("Oops, Authentication Error");
+
+    const passwordMatches = await bcrypt.compare(password, user.password);
+    if (!passwordMatches) throw new Error("Oops, Authentication Error");
+
+    return {
+      user,
+      token: jwt.sign({ userId: user.id }, "SECURE")
+    };
+  },
+
   async deleteUser(_parent, args, { prisma }, info) {
     const userExists = await prisma.exists.User({ id: args.id });
     if (!userExists) throw new Error("User doesn't exist");
