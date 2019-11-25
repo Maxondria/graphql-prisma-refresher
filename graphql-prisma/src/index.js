@@ -1,4 +1,4 @@
-import { GraphQLServer, PubSub } from "graphql-yoga";
+import { GraphQLServer } from "graphql-yoga";
 
 import db from "./db";
 
@@ -10,8 +10,7 @@ import Mutation from "./resolvers/Mutation";
 import Subscription from "./resolvers/Subscription";
 
 import prisma from "./prisma";
-
-const pubsub = new PubSub();
+import getUserId from "./utils/getUserIdFromAuth";
 
 const resolvers = {
   Query,
@@ -25,7 +24,10 @@ const resolvers = {
 const server = new GraphQLServer({
   typeDefs: "./src/schema.graphql",
   resolvers,
-  context: { db, pubsub, prisma }
+  async context(req) {
+    const userId = await getUserId(req.request.headers.authorization, prisma);
+    return { db, prisma, userId };
+  }
 });
 
 server.start(() => console.log("Server Up..."));

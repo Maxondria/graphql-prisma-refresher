@@ -1,11 +1,17 @@
 export default {
-  async post(_parent, args, { prisma }, _info) {
-    const postExists = await prisma.exists.Post({ id: args.id });
-    if (!postExists) throw new Error("Post does not exist");
-
-    return await prisma.query.post({
-      where: { id: args.id }
+  /**
+   * If post is publised, it is public, if I am the author, I can view a draft anyway
+   */
+  async post(_parent, { id }, { prisma, userId }, _info) {
+    const posts = await prisma.query.posts({
+      where: {
+        id,
+        OR: [{ published: true }, { author: { id: userId } }]
+      }
     });
+
+    if (posts.length === 0) throw new Error("Post not found");
+    return posts[0];
   },
 
   async user(_parent, args, { prisma }, _info) {
@@ -18,12 +24,31 @@ export default {
   },
 
   async posts(_parent, args, { prisma }, info) {
-    const opArgs = {};
+    const opArgs = {
+      where: {
+        publised: true
+      }
+    };
 
     if (args.query) {
-      opArgs.where = {
-        OR: [{ title_contains: args.query }, { body_contains: args.query }]
-      };
+      opArgs.where.OR = [
+        { title_contains: args.query },
+        { body_contains: args.query }
+      ];
+    }
+    return await prisma.query.posts(opArgs, info);
+  },
+
+  async myPosts(_parent, args, { prisma, userId }, info) {
+    if (!userId) throw new Error("Authentication required");
+
+    const opArgs = { where: { author: { id: userId } } };
+
+    if (args.query) {
+      opArgs.where.OR = [
+        { title_contains: args.query },
+        { body_contains: args.query }
+      ];
     }
     return await prisma.query.posts(opArgs, info);
   },
