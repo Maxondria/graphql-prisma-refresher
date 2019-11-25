@@ -8,7 +8,7 @@ type Query {
 }
 
 type Mutation {
-  createUser(data: createUserInput): User!
+  createUser(data: createUserInput): AuthPayload!
   createPost(data: createPostInput): Post!
   createComment(data: createCommentInput): Comment!
   updateUser(id: ID!, data: updateUserInput): User!
@@ -98,4 +98,9 @@ type PostSubscriptionPayload {
 type CommentSubscriptionPayload {
   mutation: PostMutationType!
   node: Comment
+}
+
+type AuthPayload {
+  user: User!
+  token: String!
 }

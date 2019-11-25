@@ -1,11 +1,25 @@
-import uuidv4 from "uuid/v4";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export default {
-  async createUser(_parent, args, { prisma }, info) {
+  async createUser(_parent, args, { prisma }, _info) {
     const emailTaken = await prisma.exists.User({ email: args.data.email });
     if (emailTaken) throw new Error("Email already in use");
 
-    return await prisma.mutation.createUser({ data: { ...args.data } }, info);
+    if (args.data.password.length < 6)
+      throw new Error("Passwords must be 6 atleast characters");
+
+    const password = await bcrypt.hash(args.data.password, 10);
+
+    //Leaving info, we will return all scalar fields
+    const user = await prisma.mutation.createUser({
+      data: { ...args.data, password }
+    });
+
+    return {
+      user,
+      token: jwt.sign({ userId: user.id }, "SECURE")
+    };
   },
 
   async deleteUser(_parent, args, { prisma }, info) {
