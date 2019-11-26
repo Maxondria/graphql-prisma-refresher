@@ -1,6 +1,12 @@
 export default {
   /**
    * If post is publised, it is public, if I am the author, I can view a draft anyway
+   *
+   * Pagination
+   *
+   * let skip = 0
+   * first: 20
+   * skip 0, on second call, skip+=first
    */
   async post(_parent, { id }, { prisma, userId }, _info) {
     const posts = await prisma.query.posts({
@@ -25,6 +31,8 @@ export default {
 
   async posts(_parent, args, { prisma }, info) {
     const opArgs = {
+      first: args.first,
+      skip: args.skip,
       where: {
         published: true
       }
@@ -42,7 +50,11 @@ export default {
   async myPosts(_parent, args, { prisma, userId }, info) {
     if (!userId) throw new Error("Authentication required");
 
-    const opArgs = { where: { author: { id: userId } } };
+    const opArgs = {
+      first: args.first,
+      skip: args.skip,
+      where: { author: { id: userId } }
+    };
 
     if (args.query) {
       opArgs.where.OR = [
@@ -54,7 +66,10 @@ export default {
   },
 
   async users(_parent, args, { prisma }, info) {
-    const opArgs = {};
+    const opArgs = {
+      first: args.first,
+      skip: args.skip
+    };
 
     if (args.query) {
       opArgs.where = {
@@ -65,6 +80,11 @@ export default {
   },
 
   async comments(_parent, _args, { prisma }, info) {
-    return await prisma.query.comments(null, info);
+    const opArgs = {
+      first: args.first,
+      skip: args.skip
+    };
+
+    return await prisma.query.comments(opArgs, info);
   }
 };
