@@ -64,12 +64,17 @@ export default {
   async updatePost(_parent, { id, data }, { prisma, userId }, info) {
     if (!userId) throw new Error("Authentication required");
 
-    const postExists = await prisma.exists.Post({
+    const post = await prisma.exists.Post({
       id,
       author: { id: userId }
     });
-    if (!postExists) throw new Error("Post doesn't exist");
+    if (!post) throw new Error("Post doesn't exist");
 
+    if (!data.published) {
+      await prisma.mutation.deleteManyComments({
+        where: { post: { id } }
+      });
+    }
     return await prisma.mutation.updatePost({ where: { id }, data }, info);
   },
 
