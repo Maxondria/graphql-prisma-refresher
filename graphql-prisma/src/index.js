@@ -8,7 +8,11 @@ const server = new GraphQLServer({
   typeDefs: "./src/schema.graphql",
   resolvers,
   async context(req) {
-    const userId = await getUserId(req.request.headers.authorization, prisma);
+    const bearerToken = req.request
+      ? req.request.headers.authorization
+      : req.connection.context.Authorization;
+    //now we can access userId on subscriptions too
+    const userId = await getUserId(bearerToken, prisma);
     return { prisma, userId };
   },
   fragmentReplacements
