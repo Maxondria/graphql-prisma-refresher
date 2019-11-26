@@ -93,7 +93,7 @@ export default {
   ) {
     if (!userId) throw new Error("Authentication required");
 
-    const postExists = await prisma.exists.Post({ id: post });
+    const postExists = await prisma.exists.Post({ id: post, published: true });
     if (!postExists) throw new Error("Post does not exist!");
 
     return await prisma.mutation.createComment(
