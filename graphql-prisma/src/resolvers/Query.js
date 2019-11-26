@@ -26,7 +26,7 @@ export default {
   async posts(_parent, args, { prisma }, info) {
     const opArgs = {
       where: {
-        publised: true
+        published: true
       }
     };
 
