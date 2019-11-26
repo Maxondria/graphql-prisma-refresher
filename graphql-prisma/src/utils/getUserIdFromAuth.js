@@ -1,9 +1,9 @@
-import JWT from "jsonwebtoken";
+import { decodeJWTToken } from "./jwtGenerator";
 
 const getUserId = async (authorizationHeader, prisma) => {
   if (!authorizationHeader) return null;
   const token = authorizationHeader.replace("Bearer ", "");
-  const decodedToken = JWT.verify(token, "SECURE");
+  const decodedToken = decodeJWTToken(token);
 
   const userExists = await prisma.exists.User({ id: decodedToken.userId });
   if (!userExists) return null;

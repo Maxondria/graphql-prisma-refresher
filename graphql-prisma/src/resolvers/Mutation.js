@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import JWT from "jsonwebtoken";
+import { JWTSignature } from "../utils/jwtGenerator";
 
 export default {
   async createUser(_parent, args, { prisma }, _info) {
@@ -18,7 +19,7 @@ export default {
 
     return {
       user,
-      token: JWT.sign({ userId: user.id }, "SECURE")
+      token: JWTSignature(user.id)
     };
   },
 
@@ -31,7 +32,7 @@ export default {
 
     return {
       user,
-      token: JWT.sign({ userId: user.id }, "SECURE")
+      token: JWTSignature(user.id)
     };
   },
 
