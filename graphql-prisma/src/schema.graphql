@@ -29,6 +29,7 @@ type Subscription {
 input updateUserInput {
   name: String
   email: String
+  password: String
 }
 
 input updatePostInput {

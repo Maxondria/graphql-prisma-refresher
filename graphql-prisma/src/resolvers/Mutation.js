@@ -1,17 +1,12 @@
-import bcrypt from "bcryptjs";
-import JWT from "jsonwebtoken";
 import { JWTSignature } from "../utils/jwtGenerator";
+import { hashPassword, comparePasswords } from "../utils/passwords";
 
 export default {
   async createUser(_parent, args, { prisma }, _info) {
     const emailTaken = await prisma.exists.User({ email: args.data.email });
     if (emailTaken) throw new Error("Email already in use");
 
-    if (args.data.password.length < 6)
-      throw new Error("Passwords must be 6 atleast characters");
-
-    const password = await bcrypt.hash(args.data.password, 10);
-
+    const password = await hashPassword(args.data.password);
     //Leaving info, we will return all scalar fields
     const user = await prisma.mutation.createUser({
       data: { ...args.data, password }
@@ -27,13 +22,14 @@ export default {
     const user = await prisma.query.user({ where: { email } });
     if (!user) throw new Error("Oops, Authentication Error");
 
-    const passwordMatches = await bcrypt.compare(password, user.password);
-    if (!passwordMatches) throw new Error("Oops, Authentication Error");
+    const passwordMatches = await comparePasswords(password, user.password);
 
-    return {
-      user,
-      token: JWTSignature(user.id)
-    };
+    if (passwordMatches) {
+      return {
+        user,
+        token: JWTSignature(user.id)
+      };
+    }
   },
 
   async deleteUser(_parent, _args, { prisma, userId }, info) {
@@ -43,6 +39,11 @@ export default {
 
   async updateUser(_parent, { data }, { prisma, userId }, info) {
     if (!userId) throw new Error("Authentication required");
+
+    if (data.password) {
+      data.password = await hashPassword(data.password);
+    }
+
     return await prisma.mutation.updateUser(
       { where: { id: userId }, data },
       info
