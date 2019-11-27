@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node_modules/.bin/nodemon src/index.js --ext js,graphql --exec babel-node",
+    "start": "env-cmd -f ./src/config/prod.env babel-node src/index.js",
+    "dev": "env-cmd -f ./src/config/dev.env node_modules/.bin/nodemon src/index.js --ext js,graphql --exec babel-node",
     "get-schema": "node_modules/.bin/graphql get-schema -p prisma --dotenv ./src/config/dev.env",
     "deploy-dev": "node_modules/.bin/prisma deploy -e ./src/config/dev.env",
     "deploy-prod": "node_modules/.bin/prisma deploy -e ./src/config/prod.env",
@@ -19,6 +20,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "env-cmd": "^10.0.1",
     "graphql-cli": "^3.0.14",
     "graphql-yoga": "^1.18.3",
     "jsonwebtoken": "^8.5.1",
