@@ -5,9 +5,10 @@
   "license": "MIT",
   "scripts": {
     "start": "node_modules/.bin/nodemon src/index.js --ext js,graphql --exec babel-node",
-    "get-schema": "node_modules/.bin/graphql get-schema -p prisma",
-    "deploy": "node_modules/.bin/prisma deploy",
-    "postdeploy": "yarn run get-schema",
+    "get-schema": "node_modules/.bin/graphql get-schema -p prisma --dotenv ./src/config/dev.env",
+    "deploy-dev": "node_modules/.bin/prisma deploy -e ./src/config/dev.env",
+    "deploy-prod": "node_modules/.bin/prisma deploy -e ./src/config/prod.env",
+    "postdeploy-dev": "yarn run get-schema",
     "prisma-token": "node_modules/.bin/prisma token",
     "prisma-reset": "node_modules/.bin/prisma reset --force",
     "prisma-del-service": "node_modules/.bin/prisma delete --force",

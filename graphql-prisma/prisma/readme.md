@@ -31,3 +31,19 @@ In the main project, outside the created prisma project directory then,install `
 -Add a `.graphqlconfig` file, stating the name of your project and endpoint, add **`"prisma"`** property, to `prisma.yml` path, to avoid secret issues
 -Run `graphql get-schema -p project-name` to download the schema from the endpoint provided in `.graphqlconfig`
 -Install `prisma-binding`, add a file `prisma.js` in your project to be able to config and use prisma in node.js
+
+## Deployment Guide
+
+Note that when we run `prisma deploy`, datamodel is deployed on a running prisma instance(container) on the endpoint provided in `prisma.yml` file.
+
+The container is generated from `docker-compose.yml` which is a collection of two services, prisma and our DB.
+
+- If using prisma-clould, create a server using heroku.
+
+- Create a 2 .env files (`dev.env` and `prod.env`) where we put environment variables
+
+- configure scripts to pick these files and configure `prisma.yml` to point to the current environment endpoint
+
+- configure `.graphqlconfig.yml` to use the same env configuration script to regenerate the schema from data model
+
+- **Production** - Run ```prisma login```, follow thru. If this is a successful step, use the generated URL to access the server and configure the same in `prod.env`
