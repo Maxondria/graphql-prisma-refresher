@@ -14,6 +14,7 @@
     "prisma-del-service": "node_modules/.bin/prisma delete --force",
     "predocker": "cd prisma && yarn run prisma-del-service && yarn run prisma-reset",
     "docker": "docker-compose stop && docker system prune -a && docker-compose up -d",
+    "docker-redis": "docker pull redis:5.0.7 && docker run -d --name redis -p 6379:6379 -v redis-vol:/data redis:5.0.7",
     "postdocker": "yarn run deploy"
   },
   "dependencies": {
