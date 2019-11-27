@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "env-cmd -f ./src/config/prod.env node dist/index.js",
+    "start": "node dist/index.js",
     "heroku-postbuild": "babel src --out-dir dist --copy-files",
     "dev": "env-cmd -f ./src/config/dev.env node_modules/.bin/nodemon src/index.js --ext js,graphql --exec babel-node",
     "get-schema": "node_modules/.bin/graphql get-schema -p prisma --dotenv ./src/config/dev.env",
