@@ -1,8 +1,6 @@
 import JWT from "jsonwebtoken";
 
-const SECURE = "SECURE";
-
-const JWTSignature = userId => JWT.sign({ userId }, SECURE);
-const decodeJWTToken = token => JWT.verify(token, SECURE);
+const JWTSignature = userId => JWT.sign({ userId }, process.env.JWT_SECRET);
+const decodeJWTToken = token => JWT.verify(token, process.env.JWT_SECRET);
 
 export { JWTSignature, decodeJWTToken };
