@@ -9,6 +9,7 @@
     "dev": "env-cmd -f ./src/config/dev.env node_modules/.bin/nodemon src/index.js --ext js,graphql --exec babel-node",
     "get-schema": "node_modules/.bin/graphql get-schema -p prisma --dotenv ./src/config/dev.env",
     "deploy-dev": "node_modules/.bin/prisma deploy -e ./src/config/dev.env",
+    "deploy-test": "node_modules/.bin/prisma deploy -e ./src/config/test.env",
     "deploy-prod": "node_modules/.bin/prisma deploy -e ./src/config/prod.env",
     "postdeploy-dev": "yarn run get-schema",
     "prisma-token": "node_modules/.bin/prisma token",
